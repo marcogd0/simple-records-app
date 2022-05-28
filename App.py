@@ -10,8 +10,7 @@ def checarLogin(usuario, senha):
         for i in usuarios:
             converted_i = json.loads(i)
             if usuario == '' or str(senha) == '':
-                janela_login['mensagem'].update(
-                    'Você deve fazer o acesso com um usuário e senha')
+                janela_login['mensagem'].update('Você deve fazer o acesso com um usuário e senha')
             elif usuario in converted_i and converted_i[usuario] == senha:
                 janela_login.hide()
                 global janela_inicial
@@ -83,6 +82,7 @@ while True:
         senha = values['senha']
         checarLogin(usuario, senha)
     if janela == janela_inicial and event == 'logout':
+        usuario_atual = ''
         janela_inicial.hide()
         janela_login.un_hide()
     # if janela == janela_inicial and event == 'registro':
