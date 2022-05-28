@@ -17,7 +17,7 @@ def checarLogin(usuario, senha):
                 janela_inicial = janelaInicial()
                 print('Login bem sucedido')
                 global usuario_atual
-                usuario_atual += usuario
+                usuario_atual = usuario
                 print(usuario_atual)
                 janela_login['mensagem'].update('Successful login')
             elif usuario in converted_i and converted_i[usuario] != senha:
@@ -30,9 +30,35 @@ def checarLogin(usuario, senha):
                 janela_login['mensagem'].update('Usuário ou senha invalidos')
                 print('Usuário ou senha invalidos')
 
-
-# sg.theme_previewer()
-# Creating the layout
+def checharCadastro(nome, novousuario, novasenha):
+    if nome == '' and novousuario == '' and novasenha == '':
+        janela_cadastro['mensagem'].update('Preencha todos os campos')
+    elif novousuario == '' and novasenha == '':
+        janela_cadastro['mensagem'].update('"Usuário" e "Senha" vazios')
+    elif nome == '' and novousuario == '':
+        janela_cadastro['mensagem'].update('"Nome" e "Usuário" vazios')
+    elif nome == '':
+        janela_cadastro['mensagem'].update('Preencha o campo "Nome"')
+    elif novousuario == '':
+        janela_cadastro['mensagem'].update('Preencha o campo "Usuário"')
+    elif novasenha == '':
+        janela_cadastro['mensagem'].update('Preencha o campo "Senha"')
+    else:
+        arquivo = open(r'Accounts/accounts.txt', 'r')
+        usuario = arquivo.readline()
+        linha = arquivo.readline()
+        print(usuario)
+        for i in usuario: # trocar por while
+            converted_i = json.loads(i)
+            print(converted_i)
+            if novousuario in converted_i:
+                janela_cadastro['mensagem'].update('Usuário já existente')
+            else:
+                arquivo.close()
+                nova_conta = {novousuario: novasenha}
+                #nova_conta[novousuario] = novasenha
+                with open(r'Accounts/accounts.txt', 'a') as arquivo:
+                    arquivo.write(f'{nova_conta}' + '\n')
 
 def janelaLogin():
     sg.theme('LightTeal')
@@ -42,12 +68,27 @@ def janelaLogin():
         [sg.Text('Usuário')],
         [sg.Input(key='usuario')],
         [sg.Text('Senha')],
-        [sg.Input(key='senha')],
-        [sg.Button('login')],
+        [sg.Input(key='senha', password_char='*')],
+        [sg.Push(), sg.Button('login'), sg.Button('cadastro'), sg.Push()],
         [sg.Text('', key='mensagem')],
     ]
     return sg.Window('Cardio Notes', resizable=True, size=(260, 450), layout=janela_login, finalize=True)
 
+def janelaCadastro():
+    sg.theme('LightTeal')
+    janela_cadastro = [
+    [sg.Column([[sg.Image('Imagens/Logo.png')]], justification='center')],
+    [sg.Push(), sg.Text('CADASTRO'), sg.Push()],
+    [sg.Text('Nome completo*:')],
+    [sg.In(key='nome')],
+    [sg.Text('Usuário*:')],
+    [sg.In(key='novo_usuario')],
+    [sg.Text('Senha*:')],
+    [sg.In(key='nova_senha', password_char='*')],
+    [sg.Push(), sg.Button('Confirmar'), sg.Button('Cancelar'), sg.Push()],
+    [sg.Text('', key='mensagem')],
+    ]
+    return sg.Window('Cadastro', resizable=True, size=(260, 450), layout=janela_cadastro, finalize=True)
 
 def janelaInicial():
     sg.theme('LightTeal')
@@ -65,15 +106,12 @@ def janelaInicial():
     ]
     return sg.Window('Cardio Notes', resizable=True, size=(260, 450), layout=interface, finalize=True)
 
+janela_login, janela_cadastro, janela_inicial = janelaLogin(), None, None
 
-# Passing the layout to the janela_login
-#janela_login = janelaLogin()
-janela_login, janela_inicial = janelaLogin(), None
-
-# Logic applied to the janela_login
+# Logica aplicada nas janelas
 while True:
     janela, event, values = sg.read_all_windows()
-    if janela == janela_login and event == sg.WIN_CLOSED:
+    if janela == janela_login and event == sg.WIN_CLOSED or janela == janela_cadastro and event == sg.WIN_CLOSED or janela == janela_inicial and event == sg.WIN_CLOSED:
         usuario_atual = ''  # lógica para o logout
         break
     if janela == janela_login and event == 'login':
@@ -81,11 +119,15 @@ while True:
         #senha = int(values['senha'])
         senha = values['senha']
         checarLogin(usuario, senha)
+    if janela == janela_login and event == 'cadastro':
+        janela_cadastro = janelaCadastro()
+    if janela == janela_cadastro and event == 'Confirmar':
+        nome = str(values['nome'])
+        novo_usuario = str(values['novo_usuario'])
+        nova_senha = str(values['nova_senha'])
+        checharCadastro(nome, novo_usuario, nova_senha)
     if janela == janela_inicial and event == 'logout':
-        usuario_atual = ''
         janela_inicial.hide()
         janela_login.un_hide()
     # if janela == janela_inicial and event == 'registro':
         # janelaRegistro()
-    if janela == janela_inicial and event == sg.WIN_CLOSED:
-        break
