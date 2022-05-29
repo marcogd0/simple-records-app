@@ -148,8 +148,8 @@ while True:
         senha = values['senha']
         checarLogin(usuario, senha)
     if janela == janela_login and event == 'cadastro':
-        janela_cadastro = janelaCadastro()
         janela_login.hide()
+        janela_cadastro = janelaCadastro()
     if janela == janela_cadastro and event == 'Confirmar':
         nome = str(values['nome'])
         novo_usuario = str(values['novo_usuario'])
