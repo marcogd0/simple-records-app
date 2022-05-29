@@ -5,32 +5,48 @@ import botoes
 usuario_atual = ''
 
 def checarLogin(usuario, senha):
+    global janela_inicial
     with open(r'Accounts/accounts.txt', 'r') as arquivo:
-        usuarios = arquivo.readlines()
-        for i in usuarios:
-            converted_i = json.loads(i)
-            if usuario == '' or str(senha) == '':
-                janela_login['mensagem'].update('Você deve fazer o acesso com um usuário e senha')
-            elif usuario in converted_i and converted_i[usuario] == senha:
-                janela_login.hide()
-                global janela_inicial
-                janela_inicial = janelaInicial()
-                print('Login bem sucedido')
-                global usuario_atual
-                usuario_atual = usuario
-                print(usuario_atual)
-                janela_login['mensagem'].update('Successful login')
-            elif usuario in converted_i and converted_i[usuario] != senha:
-                janela_login['mensagem'].update('Senha invalida')
-                print('Senha invalida')
-            elif usuario not in converted_i and senha in converted_i.values():
-                janela_login['mensagem'].update('Usuário invalido')
-                print('Usuário invalido')
-            elif usuario not in converted_i and senha not in converted_i.values():
-                janela_login['mensagem'].update('Usuário ou senha invalidos')
-                print('Usuário ou senha invalidos')
+        usuarios = arquivo.readline()
+        print(usuarios)
+        json_usuario = json.loads(usuarios)
+        if usuario in json_usuario and json_usuario[usuario] == senha:
+            janela_login.hide()
+            #global janela_inicial
+            janela_inicial = janelaInicial()
+            print('Login bem sucedido')
+            global usuario_atual
+            usuario_atual = usuario
+            janela_login['mensagem'].update('Successful login')
+        else:
+            while usuarios != '':
+                usuarios = arquivo.readline()
+                if usuarios == '':
+                    break
+                json_usuario = json.loads(usuarios)
+                if usuario == '' or str(senha) == '':
+                    janela_login['mensagem'].update('Você deve fazer o acesso com um usuário e senha')
+                elif usuario in json_usuario and json_usuario[usuario] == senha:
+                    janela_login.hide()
+                    #global janela_inicial
+                    janela_inicial = janelaInicial()
+                    print('Login bem sucedido')
+                    #global usuario_atual
+                    usuario_atual = usuario
+                    print(usuario_atual)
+                    janela_login['mensagem'].update('Successful login')
+                elif usuario in json_usuario and json_usuario[usuario] != senha:
+                    janela_login['mensagem'].update('Senha invalida')
+                    print('Senha invalida')
+                elif usuario not in json_usuario and senha in json_usuario.values():
+                    janela_login['mensagem'].update('Usuário invalido')
+                    print('Usuário invalido')
+                elif usuario not in json_usuario and senha not in json_usuario.values():
+                    janela_login['mensagem'].update('Usuário ou senha invalidos')
+                    print('Usuário ou senha invalidos')
 
-def checharCadastro(nome, novousuario, novasenha):
+def realizarCadastro(nome, novousuario, novasenha):
+    usuario = ''
     if nome == '' and novousuario == '' and novasenha == '':
         janela_cadastro['mensagem'].update('Preencha todos os campos')
     elif novousuario == '' and novasenha == '':
@@ -46,19 +62,31 @@ def checharCadastro(nome, novousuario, novasenha):
     else:
         arquivo = open(r'Accounts/accounts.txt', 'r')
         usuario = arquivo.readline()
-        linha = arquivo.readline()
         print(usuario)
-        for i in usuario: # trocar por while
-            converted_i = json.loads(i)
-            print(converted_i)
-            if novousuario in converted_i:
-                janela_cadastro['mensagem'].update('Usuário já existente')
-            else:
-                arquivo.close()
-                nova_conta = {novousuario: novasenha}
-                #nova_conta[novousuario] = novasenha
-                with open(r'Accounts/accounts.txt', 'a') as arquivo:
-                    arquivo.write(f'{nova_conta}' + '\n')
+        json_usuario = json.loads(usuario)
+        print(json_usuario)
+        if novousuario in json_usuario:
+            janela_cadastro['mensagem'].update('Usuário já existente')
+            arquivo.close()
+            return
+        else:
+            while usuario != '':
+                usuario = arquivo.readline()
+                if usuario == '':
+                    arquivo.close()
+                    break
+                # json.load() --> Converts json string into Python dictionary
+                json_usuario = json.loads(usuario)
+                if novousuario in json_usuario:
+                    janela_cadastro['mensagem'].update('Usuário já existente')
+                    arquivo.close()
+                    return
+        nova_conta = {novousuario: novasenha}
+        #nova_conta[novousuario] = novasenha
+        with open(r'Accounts/accounts.txt', 'a') as arquivo:
+            # json.dumps() --> Converts Python dictionary into json string
+            arquivo.write(f'{json.dumps(nova_conta)}' + '\n')
+            janela_cadastro['mensagem'].update('Cadastro efetuado com sucesso!')
 
 def janelaLogin():
     sg.theme('LightTeal')
@@ -121,11 +149,15 @@ while True:
         checarLogin(usuario, senha)
     if janela == janela_login and event == 'cadastro':
         janela_cadastro = janelaCadastro()
+        janela_login.hide()
     if janela == janela_cadastro and event == 'Confirmar':
         nome = str(values['nome'])
         novo_usuario = str(values['novo_usuario'])
         nova_senha = str(values['nova_senha'])
-        checharCadastro(nome, novo_usuario, nova_senha)
+        realizarCadastro(nome, novo_usuario, nova_senha)
+    if janela == janela_cadastro and event =='Cancelar':
+        janela_cadastro.hide()
+        janela_login.un_hide()
     if janela == janela_inicial and event == 'logout':
         janela_inicial.hide()
         janela_login.un_hide()
