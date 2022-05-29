@@ -18,6 +18,7 @@ def checarLogin(usuario, senha):
             global usuario_atual
             usuario_atual = usuario
             janela_login['mensagem'].update('Successful login')
+            return janela_inicial
         else:
             while usuarios != '':
                 usuarios = arquivo.readline()
@@ -35,6 +36,7 @@ def checarLogin(usuario, senha):
                     usuario_atual = usuario
                     print(usuario_atual)
                     janela_login['mensagem'].update('Successful login')
+                    return janela_inicial
                 elif usuario in json_usuario and json_usuario[usuario] != senha:
                     janela_login['mensagem'].update('Senha invalida')
                     print('Senha invalida')
