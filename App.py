@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import json
+from datetime import datetime
 import botoes
 
 usuario_atual = ''
@@ -136,12 +137,25 @@ def janelaInicial():
     ]
     return sg.Window('Cardio Notes', resizable=True, size=(260, 450), layout=interface, finalize=True)
 
-janela_login, janela_cadastro, janela_inicial = janelaLogin(), None, None
+def janelaRegistro():
+    sg.theme('LightTeal')
+    layout_registro = [
+        [sg.Text('Data do registro:')],
+        [sg.In(key='-DATA-', size=(20,1)), sg.CalendarButton('', image_data=botoes.botao_calendario, button_color=(sg.theme_background_color(), sg.theme_background_color()),close_when_date_chosen=True, target='-DATA-', no_titlebar=False, format='%d-%m-%Y')], # # format='%d-%m-%Y %H:%M:%S'
+        [sg.Text('Registro da consulta:')],
+        [sg.Multiline(size=(30,8), key='-TEXTO_REGISTRO-')],
+        [sg.Push(), sg.Button('Confirmar', key='-CONFIRMAR_REGISTRO-'), sg.Button('Cancelar', key='-CANCELAR_REGISTRO-'), sg.Push()]
+    ]
+    janela_registro = sg.Window('a', size=(260, 450), resizable=True, layout=layout_registro)
+    return janela_registro
+
+
+janela_login, janela_cadastro, janela_inicial, janela_registro = janelaLogin(), None, None, None
 
 # Logica aplicada nas janelas
 while True:
     janela, event, values = sg.read_all_windows()
-    if janela == janela_login and event == sg.WIN_CLOSED or janela == janela_cadastro and event == sg.WIN_CLOSED or janela == janela_inicial and event == sg.WIN_CLOSED:
+    if janela == janela_login and event == sg.WIN_CLOSED or janela == janela_cadastro and event == sg.WIN_CLOSED or janela == janela_inicial and event == sg.WIN_CLOSED or janela == janela_registro and event == sg.WIN_CLOSED:
         usuario_atual = ''  # lógica para o logout
         break
     if janela == janela_login and event == 'login':
@@ -160,8 +174,22 @@ while True:
     if janela == janela_cadastro and event =='Cancelar':
         janela_cadastro.hide()
         janela_login.un_hide()
+    if janela == janela_inicial and event == 'registro':
+        janela_inicial.hide()
+        janela_registro = janelaRegistro()
+        while True:
+            event, values = janela_registro.read()
+            if event == sg.WIN_CLOSED:
+                break
+            elif event == '-CANCELAR_REGISTRO-':
+                janela_inicial.un_hide()
+                janela_registro.hide()
+                break
+    if janela == janela_inicial and event == 'mostra_registro':
+        print(usuario_atual)
     if janela == janela_inicial and event == 'logout':
         janela_inicial.hide()
         janela_login.un_hide()
+    
     # if janela == janela_inicial and event == 'registro':
         # janelaRegistro()
