@@ -141,7 +141,7 @@ def janelaRegistro():
     sg.theme('LightTeal')
     layout_registro = [
         [sg.Text('Data do registro:')],
-        [sg.In(key='-DATA-', size=(20,1)), sg.CalendarButton('', image_data=botoes.botao_calendario, button_color=(sg.theme_background_color(), sg.theme_background_color()),close_when_date_chosen=True, target='data', no_titlebar=False, format='%d-%m-%Y')], # # format='%d-%m-%Y %H:%M:%S'
+        [sg.In(key='-DATA-', size=(20,1)), sg.CalendarButton('', image_data=botoes.botao_calendario, button_color=(sg.theme_background_color(), sg.theme_background_color()),close_when_date_chosen=True, target='-DATA-', no_titlebar=False, format='%d-%m-%Y')], # # format='%d-%m-%Y %H:%M:%S'
         [sg.Text('Registro da consulta:')],
         [sg.Multiline(size=(30,8), key='-TEXTO_REGISTRO-')],
         [sg.Push(), sg.Button('Confirmar', key='-CONFIRMAR_REGISTRO-'), sg.Button('Cancelar', key='-CANCELAR_REGISTRO-'), sg.Push()]
