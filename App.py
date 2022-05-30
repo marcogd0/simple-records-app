@@ -62,7 +62,7 @@ def realizarCadastro(nome, novousuario, novasenha):
         janela_cadastro['mensagem'].update('Preencha o campo "Usuário"')
     elif novasenha == '':
         janela_cadastro['mensagem'].update('Preencha o campo "Senha"')
-    else:
+    else: # Verificando se o novousuario já está no arquivo
         arquivo = open(r'Accounts/accounts.txt', 'r')
         usuario = arquivo.readline()
         print(usuario)
@@ -190,6 +190,3 @@ while True:
     if janela == janela_inicial and event == 'logout':
         janela_inicial.hide()
         janela_login.un_hide()
-    
-    # if janela == janela_inicial and event == 'registro':
-        # janelaRegistro()
