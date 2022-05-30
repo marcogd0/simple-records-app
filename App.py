@@ -185,6 +185,15 @@ while True:
                 janela_inicial.un_hide()
                 janela_registro.hide()
                 break
+            elif event == '-CONFIRMAR_REGISTRO-':
+                data = values['-DATA-']
+                registro = values['-TEXTO_REGISTRO-']
+                registro_dict = {data:registro}
+                with open('Registros/registros.txt', 'a') as arquivo:
+                    arquivo.write(f'{usuario_atual} = {json.dumps(registro_dict)}' + '\n')
+                janela_registro.hide()
+                janela_inicial.un_hide()
+                break
     if janela == janela_inicial and event == 'mostra_registro':
         print(usuario_atual)
     if janela == janela_inicial and event == 'logout':

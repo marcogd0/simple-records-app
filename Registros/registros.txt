@@ -1,0 +1,6 @@
+marcogd02 = {"31-05-2022": "testando 1...2...3"}
+a = {"13-05-2022": "Registro usando uma conta diferente"}
+a = {"17-05-2022": "outro registro"}
+a = {"31-05-2022": "Esse usuario faz muitos registros!"}
+a = {"24-05-2022": "Outro registro..."}
+b = {"25-05-2022": "Agora \u00e9 a vez do usuario b"}
