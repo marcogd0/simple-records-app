@@ -230,7 +230,6 @@ while True:
                 elif usuario_atual != linha[:posicao-1]:
                     continue
                 elif usuario_atual == linha[:posicao-1]:
-                    posicao = linha.find('=')
                     dict_registro = json.loads(linha[posicao+2:])
                     print(linha[:posicao-1])
                     #print(dict_registro.items())
