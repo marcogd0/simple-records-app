@@ -149,13 +149,20 @@ def janelaRegistro():
     janela_registro = sg.Window('a', size=(260, 450), resizable=True, layout=layout_registro)
     return janela_registro
 
+def janelaVerRegistros():
+    sg.theme('LightTeal')
+    janela_ver_registros = [
+        [sg.Output(size=(30, 10), key='-OUTPUT-')]
+    ]
+    return sg.Window('Registros', size=(260, 450), layout=janela_ver_registros, finalize=True)
 
-janela_login, janela_cadastro, janela_inicial, janela_registro = janelaLogin(), None, None, None
+
+janela_login, janela_cadastro, janela_inicial, janela_registro, janela_ver_registros = janelaLogin(), None, None, None, None
 
 # Logica aplicada nas janelas
 while True:
     janela, event, values = sg.read_all_windows()
-    if janela == janela_login and event == sg.WIN_CLOSED or janela == janela_cadastro and event == sg.WIN_CLOSED or janela == janela_inicial and event == sg.WIN_CLOSED or janela == janela_registro and event == sg.WIN_CLOSED:
+    if janela == janela_login and event == sg.WIN_CLOSED or janela == janela_cadastro and event == sg.WIN_CLOSED or janela == janela_inicial and event == sg.WIN_CLOSED or janela == janela_registro and event == sg.WIN_CLOSED or janela == janela_ver_registros and event == sg.WIN_CLOSED:
         usuario_atual = ''  # lógica para o logout
         break
     if janela == janela_login and event == 'login':
@@ -195,7 +202,44 @@ while True:
                 janela_inicial.un_hide()
                 break
     if janela == janela_inicial and event == 'mostra_registro':
-        print(usuario_atual)
+        janela_inicial.hide()
+        janela_ver_registros = janelaVerRegistros()
+        with open('Registros/registros.txt', 'r') as arquivo:
+            linha = arquivo.readline()
+            print(linha)
+            n_registro = 1
+            # ****************** NEEDS TO BE FIXED ***********************
+            #if usuario_atual.lower() == linha[:len(usuario_atual)].lower():
+            #    posicao = linha.find('=')
+            #    dict_registro = json.loads(linha[posicao+2])
+            #    print(type(dict_registro))
+            #    #print(dict_registro.items())
+            #    print('Registro ', n_registro)
+            #    #print(dict_registro.keys())
+            #    #print(dict_registro.values())
+            #    print('=' * 30)
+            #    n_registro += 1
+            #else:
+            #else:
+            # ***************************************************************
+            while linha != '':
+                linha = arquivo.readline()
+                posicao = linha.find('=')
+                if linha == '':
+                    break
+                elif usuario_atual != linha[:posicao-1]:
+                    continue
+                elif usuario_atual == linha[:posicao-1]:
+                    posicao = linha.find('=')
+                    dict_registro = json.loads(linha[posicao+2:])
+                    print(linha[:posicao-1])
+                    #print(dict_registro.items())
+                    for i, (key, value) in enumerate(dict_registro.items()):
+                        print('Registro ', n_registro)
+                        print(key)
+                        print(value)
+                    #print(dict_registro)
+                    n_registro += 1
     if janela == janela_inicial and event == 'logout':
         janela_inicial.hide()
         janela_login.un_hide()
